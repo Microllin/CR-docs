@@ -1,0 +1,39 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-payload}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-payload}
+      POSTGRES_DB: ${POSTGRES_DB:-crdocs}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-payload}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    # 如需从宿主机直连数据库可打开：
+    # ports:
+    #   - '5432:5432'
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-payload}:${POSTGRES_PASSWORD:-payload}@db:5432/${POSTGRES_DB:-crdocs}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?请在 .env 里设置 PAYLOAD_SECRET}
+      NODE_ENV: production
+    volumes:
+      # 用户上传的图片持久化到宿主 ./media（避免容器重建丢失）
+      - ./media:/app/media
+    ports:
+      - '${WEB_PORT:-3000}:3000'
+
+volumes:
+  pgdata:
