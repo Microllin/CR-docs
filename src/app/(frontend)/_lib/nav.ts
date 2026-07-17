@@ -77,21 +77,38 @@ export async function getAllDocSlugs(): Promise<string[]> {
   return res.docs.map((d) => (d as Doc).slug).filter(Boolean)
 }
 
-export type SiteSettings = { siteName: string; logoMark: string; description: string }
+export type SiteSettings = {
+  siteName: string
+  logoMark: string
+  description: string
+  logoUrl: string | null
+  faviconUrl: string | null
+}
+
+// 从 upload 字段里取媒体 URL（depth>=1 时 payload 会填充关联对象）
+function mediaUrl(v: unknown): string | null {
+  if (v && typeof v === 'object' && 'url' in v) {
+    const u = (v as { url?: string }).url
+    return u || null
+  }
+  return null
+}
 
 // 读取站点设置（后台可改），带兜底默认值
 // 构建期预渲染 / 或数据库暂不可用时不抛错，返回默认值
 export async function getSettings(locale: Locale): Promise<SiteSettings> {
   try {
     const payload = await getPayloadClient()
-    const s = await payload.findGlobal({ slug: 'settings', locale })
+    const s = await payload.findGlobal({ slug: 'settings', locale, depth: 1 })
     const siteName = s?.siteName || 'Docs'
     return {
       siteName,
       logoMark: s?.logoMark || siteName.charAt(0).toUpperCase(),
       description: s?.description || '',
+      logoUrl: mediaUrl(s?.logo),
+      faviconUrl: mediaUrl(s?.favicon),
     }
   } catch {
-    return { siteName: 'Docs', logoMark: 'D', description: '' }
+    return { siteName: 'Docs', logoMark: 'D', description: '', logoUrl: null, faviconUrl: null }
   }
 }

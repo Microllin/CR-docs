@@ -10,16 +10,23 @@ export function TopNav({
   locale,
   siteName,
   logoMark,
+  logoUrl,
 }: {
   locale: Locale
   siteName: string
   logoMark: string
+  logoUrl?: string | null
 }) {
   return (
     <header className="vp-nav">
       <div className="vp-nav-inner">
         <Link href={`/docs/${locale}`} className="vp-nav-logo">
-          <span className="vp-logo-mark">{logoMark}</span>
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="vp-logo-img" src={logoUrl} alt={siteName} />
+          ) : (
+            <span className="vp-logo-mark">{logoMark}</span>
+          )}
           <span className="vp-logo-text">{siteName}</span>
         </Link>
 

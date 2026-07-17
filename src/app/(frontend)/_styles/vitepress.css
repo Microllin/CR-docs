@@ -121,6 +121,12 @@ a:hover {
   background: linear-gradient(135deg, var(--vp-c-brand-3), var(--vp-c-brand-1));
   font-weight: 800;
 }
+.vp-logo-img {
+  height: 28px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
 .vp-nav-right {
   display: flex;
   align-items: center;

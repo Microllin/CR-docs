@@ -404,9 +404,17 @@ export interface Setting {
    */
   siteName: string;
   /**
-   * Logo 方块里的字母/字，建议 1~2 个字符。
+   * Logo 方块里的字母/字，建议 1~2 个字符。未上传 Logo 图片时使用。
    */
   logoMark?: string | null;
+  /**
+   * 上传后替代左上角的字母方块（建议高度 32px 左右的 PNG/SVG）。
+   */
+  logo?: (number | null) | Media;
+  /**
+   * 浏览器标签页图标（建议 .ico / .png / .svg，正方形）。
+   */
+  favicon?: (number | null) | Media;
   /**
    * 用于搜索引擎与分享预览。
    */
@@ -443,6 +451,8 @@ export interface NavigationSelect<T extends boolean = true> {
 export interface SettingsSelect<T extends boolean = true> {
   siteName?: T;
   logoMark?: T;
+  logo?: T;
+  favicon?: T;
   description?: T;
   updatedAt?: T;
   createdAt?: T;

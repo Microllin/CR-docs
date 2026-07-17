@@ -67,7 +67,12 @@ function Shell({
 }) {
   return (
     <div className="vp-layout">
-      <TopNav locale={locale} siteName={settings.siteName} logoMark={settings.logoMark} />
+      <TopNav
+        locale={locale}
+        siteName={settings.siteName}
+        logoMark={settings.logoMark}
+        logoUrl={settings.logoUrl}
+      />
       <div className="vp-body">
         <Sidebar groups={sidebar} />
         <main className="vp-main">{children}</main>
