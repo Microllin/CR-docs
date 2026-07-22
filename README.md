@@ -35,6 +35,9 @@ src/
 scripts/seed.ts              # 种子数据（管理员 + 示例文档 + 导航）
 scripts/set-nav.ts           # 按 slug 前缀批量配置侧边栏分组
 scripts/fix-links.ts         # 把 Markdown 里 .md 相对链接重写为站点 URL
+deploy.sh                    # 一键部署（校验/建 .env/build/起服务/建表/灌示例）
+package.sh                   # 打包干净源码交付包（cr-docs-deploy-*.tar.gz）
+DEPLOY.md                    # 面向交付实施的现场部署说明
 ```
 
 ## 本地开发
@@ -78,6 +81,21 @@ pnpm dev
 
 ## 生产部署（Docker Compose 自托管）
 
+> 交付实施同事请直接看 [`DEPLOY.md`](./DEPLOY.md)（现场部署说明，含前置要求 / 验证 / FAQ）。
+
+### 一键部署（推荐）
+
+```bash
+./deploy.sh                 # 默认端口 8300，自带 Postgres，灌 3 篇示例文档
+WEB_PORT=80 ./deploy.sh     # 指定对外端口
+./deploy.sh --no-seed       # 只建空站，不灌示例
+```
+
+脚本自动完成：校验环境 → 生成 `.env` 与随机 `PAYLOAD_SECRET` → 构建镜像 → 起 Postgres + Web → 建表 → 灌示例 → 打印访问地址与管理员账号。
+容器 / 卷 / 网络统一命名为 `cr-docs-*`（compose 项目名固定为 `cr-docs`）。
+
+### 或手动部署
+
 ```bash
 cp .env.example .env
 # 必改：PAYLOAD_SECRET=<openssl rand -hex 32>；按需改 POSTGRES_* / WEB_PORT
@@ -96,6 +114,14 @@ docker compose up -d --build
 ```bash
 docker compose exec web node_modules/.bin/tsx scripts/seed.ts
 ```
+
+### 打包交付给下一手
+
+```bash
+./package.sh                # 生成 ../cr-docs-deploy-YYYYMMDD.tar.gz（干净源码包）
+```
+
+排除依赖 / 构建产物 / 本机 `.env` / 已有图片。对方解压后 `cd` 进目录跑 `./deploy.sh` 即可。
 
 ## ⚠️ 本仓库不含的内容（部署前须知）
 
