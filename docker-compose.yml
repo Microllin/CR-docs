@@ -1,3 +1,6 @@
+# 固定 Compose 项目名 —— 容器/卷/网络统一为 cr-docs-*（不随解压目录名变化）。
+name: cr-docs
+
 services:
   db:
     image: postgres:16-alpine
